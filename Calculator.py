@@ -1,26 +1,31 @@
-math_task = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+
 
 
 def mul_div_calculator(mylist: list) -> list:
 
     if '*' in mylist:
-        # ex. [4, '*', 6]
         opindex = mylist.index('*')
         num1index = opindex - 1
 
+        # Prepare the numbers for calculation:
         num1 = mylist[opindex - 1]
         num2 = mylist[opindex + 1]
 
+        # Calculate the math task in the list:
         result_mul_div = num1 * num2
         print(f"Result of multiplication: {result_mul_div}")
         print()
 
+        # Revise the list:
         mylist.insert((opindex + 2), result_mul_div)
         mylist.pop(num1index)
         mylist.pop(num1index)
         mylist.pop(num1index)
         print(f"Status after multiplication: {mylist}")
         print()
+        
+        # My awesome recursion:
+        mul_div_calculator(mylist)
 
     elif '/' in mylist:
         opindex = mylist.index('/')
@@ -39,67 +44,61 @@ def mul_div_calculator(mylist: list) -> list:
         mylist.pop(num1index)
         print(f"Status after division: {mylist}")
         print()
+        
+        mul_div_calculator(mylist)
 
     else:
+        # pass
         return mylist
-
-    # ***** My awesome recursion: *****
-    mul_div_calculator(mylist)
 
 
 def add_sub_calculator(mylist: list) -> list:
     if '+' in mylist:
         opindex = mylist.index('+')
         num1index = opindex - 1
-        print(opindex)
 
         num1 = mylist[opindex - 1]
         num2 = mylist[opindex + 1]
 
-        result = num1 + num2
-
-        mylist.insert((opindex + 2), result)
-        print(f"Status 1: {mylist}")
+        result_add_sub = num1 + num2
+        print(f"Result of addition: {mylist}")
         print()
 
+        mylist.insert((opindex + 2), result_add_sub)
         mylist.pop(num1index)
         mylist.pop(num1index)
         mylist.pop(num1index)
-
-        print(opindex)
-        print(f"Status 2: {mylist}")
+        print(f"Status after addition: {mylist}")
+        print()
+        
+        add_sub_calculator(mylist)
 
     elif '-' in mylist:
         opindex = mylist.index('-')
         num1index = opindex - 1
-        print(opindex)
 
         num1 = mylist[opindex - 1]
         num2 = mylist[opindex + 1]
 
-        result = int(num1 - num2)
-
-        mylist.insert((opindex + 2), result)
-        print(f"Status 3: {mylist}")
+        result_add_sub = int(num1 - num2)
+        print(f"Result of subraction: {mylist}")
         print()
 
+        mylist.insert((opindex + 2), result_add_sub)
         mylist.pop(num1index)
         mylist.pop(num1index)
         mylist.pop(num1index)
-
-        print(opindex)
-        print(f"Status 4: {mylist}")
-
+        print(f"Status after subtraction: {mylist}")
+        print()
 
     else:
         return mylist
 
-    # ***** My awesome recursion: *****
-    add_sub_calculator(mylist)
-
 
 def bracket_term_calculator(math_task: list) -> list:
-    # math_task_new = []
+    mt_in_brackets_2 = []
+    mt_in_brackets_3 = []
+    
     if '(' and ')' in math_task:
         bracket_open = math_task.index('(')
         print(f"Index of bracket open: {bracket_open}.")
@@ -111,46 +110,57 @@ def bracket_term_calculator(math_task: list) -> list:
         print(f"Math task in brackets: {mt_in_brackets}.")
 
         # Calculate the math task within the brackets:
-        mt_in_brackets = mul_div_calculator(mt_in_brackets)
-        print(f"Was kommt nach mul-div raus? {mt_in_brackets}")
+        # 1st: Try to solve mul-div tasks:
+        mt_in_brackets_2.append(mul_div_calculator(mt_in_brackets))
+        print(type(mt_in_brackets_2))
+        print(f"Was kommt nach mul-div raus? {mt_in_brackets_2}")
 
-        mt_in_brackets = add_sub_calculator(mt_in_brackets)
-        print(f"Was kommt nach add-sub raus? {mt_in_brackets}")
+        # 2nd: Try to solve add-sub tasks:
+        mt_in_brackets_3.append(add_sub_calculator(mt_in_brackets))
+        print(f"Was kommt nach add-sub raus? {mt_in_brackets_3}")
 
         # Within the origin math task delete the math term in brackets and the brackets itself!
         del math_task[bracket_open: bracket_close + 1]
-        math_task_new = math_task
-        print(math_task_new)
-        print()
 
-        # Insert the result of the math term within brackets in to the new math task.
-        math_task_new.insert(bracket_open, result2)
-        print(f"Das Ergebnis des Klammerausdrucks ist: {mt_in_brackets}. "
-              f"Hier die überarbeitete Mathe-Aufgabe: {math_task_new}")
+        # Insert at the index of the bracket open the result of the the bracket term.
+        # result_bracket_term = mt_in_brackets_3[:]
+        math_task[bracket_open:bracket_open] = mt_in_brackets[:]
 
-        bracket_term_calculator(math_task_new)
+        print(f"Das Ergebnis des Klammerausdrucks ist: {mt_in_brackets}.")
+        print(f"Hier die überarbeitete Mathe-Aufgabe: {math_task}")
+
+        bracket_term_calculator(math_task)
 
     else:
-        return math_task_new
+        return math_task
 
 
 def master_calculator(math_task) -> list:
+    mt_no_brackets = []
+    mt_no_mul_div = []
+    mt_no_add_div = []
+
     # Zuerst Klammer-Ausdrücke ausrechnen:
-    mt_no_brackets = bracket_term_calculator(math_task)
+    bracket_term_calculator(math_task)
 
     # Dann Punktrechnung ausrechnen:
-    mt_no_mul_div = mul_div_calculator(mt_no_brackets)
+    mul_div_calculator(math_task)
 
     # Zuletzt Plus-Minus-Rechnung ausrechnen
-    result = add_sub_calculator(mt_no_mul_div)
+    add_sub_calculator(math_task)
+    result = math_task[0]
 
     # Return das Ergebnis
     return result
 
 
 if __name__ == '__main__':
-    print(f"The math task in a list: {math_task}")
-    print()
+    math_task_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+    math_task_2 = [4, '*', 20, '+', '(', 12, '/', 4, '+', 17, ')', '-', 81, '/', 9]
 
-    result = master_calculator(math_task)
-    print(result)
+    print(f"The math task as a list: {math_task_1}")
+    result_math_task_1 = master_calculator(math_task_1)
+    print(f"Traraaaa. The result is: {result_math_task_1}")
+
+    result_math_task_2= master_calculator(math_task_2)
+    print(f"The result is: {result_math_task_2}")
