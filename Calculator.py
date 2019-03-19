@@ -2,7 +2,6 @@ math_task = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
 
 
 def mul_div_calculator(mylist: list) -> list:
-    result_mul_div = []
 
     if '*' in mylist:
         # ex. [4, '*', 6]
@@ -112,11 +111,11 @@ def bracket_term_calculator(math_task: list) -> list:
         print(f"Math task in brackets: {mt_in_brackets}.")
 
         # Calculate the math task within the brackets:
-        result1 = mul_div_calculator(mt_in_brackets)
-        print(f"Was kommt nach mul-div raus? {result1}")
+        mt_in_brackets = mul_div_calculator(mt_in_brackets)
+        print(f"Was kommt nach mul-div raus? {mt_in_brackets}")
 
-        result2 = add_sub_calculator(result1)
-        print(f"Was kommt nach add-sub raus? {result2}")
+        mt_in_brackets = add_sub_calculator(mt_in_brackets)
+        print(f"Was kommt nach add-sub raus? {mt_in_brackets}")
 
         # Within the origin math task delete the math term in brackets and the brackets itself!
         del math_task[bracket_open: bracket_close + 1]
