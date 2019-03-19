@@ -158,9 +158,10 @@ if __name__ == '__main__':
     math_task_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
     math_task_2 = [4, '*', 20, '+', '(', 12, '/', 4, '+', 17, ')', '-', 81, '/', 9]
 
-    print(f"The math task as a list: {math_task_1}")
-    result_math_task_1 = master_calculator(math_task_1)
-    print(f"Traraaaa. The result is: {result_math_task_1}")
+    # print(f"The math task as a list: {math_task_1}")
+    # result_math_task_1 = master_calculator(math_task_1)
+    # print(f"Traraaaa. The result is: {result_math_task_1}")
 
+    print(f"The math task as a list: {math_task_2}")
     result_math_task_2= master_calculator(math_task_2)
     print(f"The result is: {result_math_task_2}")
