@@ -231,11 +231,11 @@ if __name__ == '__main__':
     print(math_task_1_sv)
     print(math_task_2_sv)
 
-
-    # print(f"The math task as a list: {math_task_1}")
-    # result_math_task_1 = master_calculator(math_task_1)
-    # print(f"Traraaaa. The result is: {result_math_task_1}")
     c = Calculator()
+    print(f"The math task as a list: {math_task_1}")
+    result_math_task_1 = c.master_calculator(math_task_1_sv)
+    print(f"Traraaaa. The result is: {result_math_task_1}")
+
     print(f"The math task as a list: {math_task_2}")
-    result_math_task_2 = c.master_calculator(math_task_2)
+    result_math_task_2 = c.master_calculator(math_task_2_sv)
     print(f"The result is: {result_math_task_2}")
