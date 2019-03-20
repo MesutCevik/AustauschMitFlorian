@@ -1,8 +1,25 @@
-from typing import List
+from enum import Enum
+from typing import List, Dict, Union, Tuple, Optional
+
+import logging
+
+
+class SlotType(Enum):
+    operator = 1
+    number = 2
+
+
+class SlotValue:
+    name: str
+    type: SlotType
+    synonym: str
+    resolved: str
+    is_validated: bool
+    number_as_str: str
+    slot_position: int
+
 
 class Calculator:
-
-
     def mul_div_calculator(self, mylist: List[str]) -> List[str]:
         if '*' in mylist:
             opindex = mylist.index('*')
@@ -52,8 +69,6 @@ class Calculator:
             # pass
             return mylist
 
-
-
     def add_sub_calculator(self, mylist: List[str]) -> List[str]:
         if '+' in mylist:
             opindex = mylist.index('+')
@@ -96,8 +111,6 @@ class Calculator:
         else:
             return mylist
 
-
-
     def bracket_term_calculator(self, math_task: List[str]) -> List[str]:
         mt_in_brackets_2 = []
         mt_in_brackets_3 = []
@@ -138,8 +151,7 @@ class Calculator:
         else:
             return math_task
 
-
-    def master_calculator(self, math_task: List[str]) -> List[str]:
+    def master_calculator(self, math_task: List[str]) -> str:
         mt_no_brackets = []
         mt_no_mul_div = []
         mt_no_add_div = []
@@ -157,15 +169,73 @@ class Calculator:
         # Return das Ergebnis
         return result
 
+    @staticmethod
+    def helper_generate_slot_value(name: str, slot_position: int, number_as_str:str, resolved:str, is_validated: bool) -> SlotValue:
+        sv = SlotValue()
+        sv.name = name
+        sv.slot_position = slot_position
+        sv.number_as_str = number_as_str
+        sv.resolved = resolved
+        sv.is_validated = is_validated
+        return sv
+
+    @staticmethod
+    def helper_generate_list_of_slotvalues(term: list) -> List[SlotValue]:
+        slot_values: List[SlotValue] = []
+        num_op = 0
+        num_num = 0
+        num_bracket = 0
+        for index, item in enumerate(term):
+            is_validated = True
+            if item == "+":
+                resolved = "OPERATOR_ADD"
+                num_op += 1
+                name = f"operator{num_op}"
+            elif item == "-":
+                resolved = "OPERATOR_SUB"
+                num_op += 1
+                name = f"operator{num_op}"
+            elif item == "*":
+                resolved = "OPERATOR_MUL"
+                num_op += 1
+                name = f"operator{num_op}"
+            elif item == "/":
+                resolved = "OPERATOR_DIV"
+                num_op += 1
+                name = f"operator{num_op}"
+            elif item == "(":
+                resolved = "OPERATOR_BRACKET_OPEN"
+                num_bracket += 1
+                name = f"num_bracket{num_bracket}"
+            elif item == ")":
+                resolved = "OPERATOR_BRACKET_CLOSE"
+                num_bracket += 1
+                name = f"num_bracket{num_bracket}"
+            else:
+                resolved = f"{item}"
+                is_validated = False
+                num_num += 1
+                name = f"number{num_num}"
+
+            sv = Calculator.helper_generate_slot_value(name=name, slot_position=index, number_as_str=f"{item}", resolved=resolved, is_validated=is_validated)
+            slot_values.append(sv)
+
+        return slot_values
+        
 
 if __name__ == '__main__':
     math_task_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
     math_task_2 = [4, '*', 20, '+', '(', 12, '/', 4, '+', 17, ')', '-', 81, '/', 9]
+    math_task_1_sv = Calculator.helper_generate_list_of_slotvalues(math_task_1)
+    math_task_2_sv = Calculator.helper_generate_list_of_slotvalues(math_task_2)
+    print(math_task_1_sv)
+    print(math_task_2_sv)
+
 
     # print(f"The math task as a list: {math_task_1}")
     # result_math_task_1 = master_calculator(math_task_1)
     # print(f"Traraaaa. The result is: {result_math_task_1}")
     c = Calculator()
     print(f"The math task as a list: {math_task_2}")
-    result_math_task_2= c.master_calculator(math_task_2)
+    result_math_task_2 = c.master_calculator(math_task_2)
     print(f"The result is: {result_math_task_2}")
