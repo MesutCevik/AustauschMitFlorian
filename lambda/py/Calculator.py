@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Dict, Union, Tuple, Optional
+from typing import List, Dict, Union, Tuple, Optional, Any
 
 import logging
 
@@ -22,74 +22,62 @@ class SlotValue:
 class Calculator:
 
     def mul_div_calculator(self, m_p_list_sv: List[SlotValue]) -> List[SlotValue]:
-        # Loop through the slot value items in m_p_list_sv. Search for the first operater and check, whether the
-        # operator is a subtraction or division one. Assign and save the slot positions for this operator in a VAR.
+        # Loop through the slot value items in m_p_list_sv. Search for the first operator and check, whether the
+        # operator is a multiplication or division one. Assign and save the slot position for this operator in a VAR.
         for sv_item in m_p_list_sv:
-            if sv_item.resolved == "OPERATOR_SUB":
-                slot_pos_operator = sv_item.slot_position
-                num1_index = slot_pos_operator - 1
+            if sv_item.resolved == "OPERATOR_MUL":
+                op_idx = sv_item.slot_position
 
                 # Prepare the numbers for calculation:
-                num1 = m_p_list_sv[slot_pos_operator - 1].resolved
-                num2 = m_p_list_sv[slot_pos_operator + 1].resolved
+                # num1: Take the value of field "resolved" from the sv_item one BEFORE the sv_item with the operator.
+                # num2: Take the value of field "resolved" from the sv_item one AFTER the sv_item with the operator.
+                # Because the values of "resolved" field are str, cast them to int!
+                num1 = int(m_p_list_sv[op_idx - 1].resolved)
+                num2 = int(m_p_list_sv[op_idx + 1].resolved)
 
                 # Calculate the math term in the list:
-                result_mul_div = num1 * num2
+                result_mul_div = num1 + num2
                 print(f"Result of multiplication: {result_mul_div}")
+
+                # Revise the list m_p_list_sv:
+                m_p_list_sv.insert((op_idx + 2), result_mul_div)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                print(f"Status after multiplication: {self.print_maths_problem_as_list(m_p_list_sv)}")
                 print()
 
+                # My awesome recursion:
+                self.mul_div_calculator(m_p_list_sv)
 
-            elif sv_item.resolved == "OPERATOR_BRACKET_OPEN":
-                slot_pos_bracket_open = sv_item.slot_position
-                print(f"Slot position of open bracket: {slot_pos_bracket_open}.")
+            elif sv_item.resolved == "OPERATOR_DIV":
+                op_idx = sv_item.slot_position
 
-        if '*' in m_p_list_sv.__str__():
-            opindex = m_p_list_sv.index('*')
-            num1index = opindex - 1
+                # Prepare the numbers for calculation:
+                # num1: Take the value of field "resolved" from the sv_item one BEFORE the sv_item with the operator.
+                # num2: Take the value of field "resolved" from the sv_item one AFTER the sv_item with the operator.
+                # Because the values of "resolved" field are str, cast them to int!
+                num1 = int(m_p_list_sv[op_idx - 1].resolved)
+                num2 = int(m_p_list_sv[op_idx + 1].resolved)
 
-            # Prepare the numbers for calculation:
-            # num1 = mylist[opindex - 1]
-            # num2 = mylist[opindex + 1]
+                # Calculate the math term in the list. Because a devisions result is a float, cast it to int:
+                result_mul_div = int(num1 / num2)
+                print(f"Result of division: {result_mul_div}")
 
-            # Calculate the math task in the list:
-            result_mul_div = num1 * num2
-            print(f"Result of multiplication: {result_mul_div}")
-            print()
+                # Revise the list m_p_list_sv:
+                m_p_list_sv.insert((op_idx + 2), result_mul_div)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                print(f"Status after division: {self.print_maths_problem_as_list(m_p_list_sv)}")
+                print()
 
-            # Revise the list:
-            mylist.insert((opindex + 2), result_mul_div)
-            mylist.pop(num1index)
-            mylist.pop(num1index)
-            mylist.pop(num1index)
-            print(f"Status after multiplication: {mylist}")
-            print()
+                # My awesome recursion:
+                self.mul_div_calculator(m_p_list_sv)
 
-            # My awesome recursion:
-            self.mul_div_calculator(mylist)
-
-        elif '/' in mylist:
-            opindex = mylist.index('/')
-            num1index = opindex - 1
-
-            num1 = mylist[opindex - 1]
-            num2 = mylist[opindex + 1]
-
-            result_mul_div = int(num1 / num2)
-            print(f"Result of division: {result_mul_div}")
-            print()
-
-            mylist.insert((opindex + 2), result_mul_div)
-            mylist.pop(num1index)
-            mylist.pop(num1index)
-            mylist.pop(num1index)
-            print(f"Status after division: {mylist}")
-            print()
-
-            self.mul_div_calculator(mylist)
-
-        else:
-            # pass
-            return mylist
+            else:
+                # If there is no mul-div term to solve, this method returns the last status of m_p_list_sv.
+                return m_p_list_sv
 
     def add_sub_calculator(self, mylist: List[str]) -> List[str]:
         if '+' in mylist:
@@ -156,7 +144,7 @@ class Calculator:
             # open bracket. Assign and save the slot positions for these brackets in separate VARs.
             for sv_item in m_p_list_sv:
                 if sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
-                    slot_pos_bracket_close = sv_item.slot_position
+                    Idx_slot_pos_bracket_close = sv_item.slot_position
                     print(f"Slot position of first close bracket: {slot_pos_bracket_close}.")
 
                 elif sv_item.resolved == "OPERATOR_BRACKET_OPEN":
@@ -235,6 +223,7 @@ class Calculator:
         num_op = 0
         num_num = 0
         num_bracket = 0
+
         for index, item in enumerate(term):
             is_validated = True
             if item == "+":
@@ -276,33 +265,42 @@ class Calculator:
 
         return slot_values
 
-    # >>>>> IN ARBEIT <<<<<
-    def __str__(self) -> str:
-        result = m_p_list_sv[]
-        return super().__str__()
+    def print_maths_problem_as_list(self, maths_problem: List[SlotValue]) -> List[str]:
+        # Print maths problems status as list in order to show the status.
+        maths_problem_4_print = maths_problem
+        idx_elem = 0
+        maths_problem_as_list = []
+        for elem in maths_problem_4_print:
+            maths_problem_as_list.append(elem.resolved)
+            idx_elem += 1
 
+        return maths_problem_as_list
+
+    # # >>>>> IN ARBEIT <<<<<
+    # def get_resolved_value(self, m_p_list_sv: List[SlotValue], index: int) -> object: value: Any
+       # value = m_p_list_sv[index]
 
 if __name__ == '__main__':
-    math_task_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
-    math_task_2 = [4, '*', 20, '+', '(', 12, '/', 4, '+', 17, ')', '-', 81, '/', 9]
-    math_task_1_sv = Calculator.helper_generate_list_of_slotvalues(math_task_1)
-    math_task_2_sv = Calculator.helper_generate_list_of_slotvalues(math_task_2)
+    maths_problem_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+    maths_problem_2 = [4, '*', 20, '+', '(', 12, '/', 4, '+', 17, ')', '-', 81, '/', 9]
+    maths_problem_1_sv = Calculator.helper_generate_list_of_slotvalues(maths_problem_1)
+    maths_problem_2_sv = Calculator.helper_generate_list_of_slotvalues(maths_problem_2)
     idx_elem = 0
     list_elem = []
-    for elem in math_task_1_sv:
-        list_elem.append(math_task_1_sv[idx_elem].resolved)
+    for elem in maths_problem_1_sv:
+        list_elem.append(maths_problem_1_sv[idx_elem].resolved)
         idx_elem += 1
-    print(math_task_1_sv[0].resolved)
+    print(maths_problem_1_sv[0].resolved)
     print(math_task_2_sv)
 
     c = Calculator()  # Generate an standard object from the class "Calculator" and assign it to VAR 'c'.
 
-    print(f"The math task as a list: {math_task_1}")
-    print(f"The math task as a list of SlotValue objects: {math_task_1_sv}")
+    print(f"The math task as a list: {maths_problem_1}")
+    print(f"The math task as a list of SlotValue objects: {maths_problem_1_sv}")
 
-    result_math_task_1 = c.master_calculator(math_task_1_sv)
+    result_math_task_1 = c.master_calculator(maths_problem_1_sv)
     print(f"Traraaaa. The result is: {result_math_task_1}")
 
-    print(f"The math task as a list: {math_task_2}")
+    print(f"The math task as a list: {maths_problem_2}")
     result_math_task_2 = c.master_calculator(math_task_2_sv)
     print(f"The result is: {result_math_task_2}")
