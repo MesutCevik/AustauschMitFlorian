@@ -22,11 +22,12 @@ class SlotValue:
 class Calculator:
 
     def mul_div_calculator(self, m_p_list_sv: List[SlotValue]) -> List[SlotValue]:
-        # Loop through the slot value items in m_p_list_sv. Search for the first operator and check, whether the
-        # operator is a multiplication or division one. Assign and save the slot position for this operator in a VAR.
         for sv_item in m_p_list_sv:
+            # Loop through the slot value-items in the list "m_p_list_sv". Search for the first operator and check,
+            # whether the operator is a multiplication or division one. Assign and save the items index for this
+            # operator in a VAR. Then continue.
             if sv_item.resolved == "OPERATOR_MUL":
-                op_idx = sv_item.slot_position
+                op_idx = m_p_list_sv.index(sv_item)
 
                 # Prepare the numbers for calculation:
                 # num1: Take the value of field "resolved" from the sv_item one BEFORE the sv_item with the operator.
@@ -36,14 +37,19 @@ class Calculator:
                 num2 = int(m_p_list_sv[op_idx + 1].resolved)
 
                 # Calculate the math term in the list:
-                result_mul_div = num1 + num2
+                result_mul_div: int = num1 * num2
                 print(f"Result of multiplication: {result_mul_div}")
 
-                # Revise the list m_p_list_sv:
-                m_p_list_sv.insert((op_idx + 2), result_mul_div)
-                m_p_list_sv.pop(op_idx - 1)
-                m_p_list_sv.pop(op_idx - 1)
-                m_p_list_sv.pop(op_idx - 1)
+                # Generate a new SlotValue()-object "slot_value" for the calculated result (number):
+                sv_item_new_num = self.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1, number_as_str=str(result_mul_div), resolved=str(result_mul_div), is_validated=False)
+
+                # Revise the list m_p_list_sv: insert the new SlotValue()-object "sv_item_new_num" at position
+                # "op_idx - 1". This is the starting index of the calculated math term.
+                # Then pop all items (objects), which we used in the calculation above.
+                m_p_list_sv.insert(op_idx, sv_item_new_num)
+                m_p_list_sv.pop(op_idx)
+                m_p_list_sv.pop(op_idx)
+                m_p_list_sv.pop(op_idx)
                 print(f"Status after multiplication: {self.print_maths_problem_as_list(m_p_list_sv)}")
                 print()
 
@@ -51,7 +57,7 @@ class Calculator:
                 self.mul_div_calculator(m_p_list_sv)
 
             elif sv_item.resolved == "OPERATOR_DIV":
-                op_idx = sv_item.slot_position
+                op_idx = m_p_list_sv.index(sv_item)
 
                 # Prepare the numbers for calculation:
                 # num1: Take the value of field "resolved" from the sv_item one BEFORE the sv_item with the operator.
@@ -64,12 +70,17 @@ class Calculator:
                 result_mul_div = int(num1 / num2)
                 print(f"Result of division: {result_mul_div}")
 
-                # Revise the list m_p_list_sv:
-                m_p_list_sv.insert((op_idx + 2), result_mul_div)
-                m_p_list_sv.pop(op_idx - 1)
-                m_p_list_sv.pop(op_idx - 1)
-                m_p_list_sv.pop(op_idx - 1)
-                print(f"Status after division: {self.print_maths_problem_as_list(m_p_list_sv)}")
+                # Generate a new SlotValue()-object "slot_value" for the calculated result (number):
+                sv_item_new_num = self.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1, number_as_str=str(result_mul_div), resolved=str(result_mul_div), is_validated=False)
+
+                # Revise the list m_p_list_sv: insert the new SlotValue()-object "sv_item_new_num" at position
+                # "op_idx - 1". This is the starting index of the calculated math term.
+                # Then pop all items (objects), which we used in the calculation above.
+                m_p_list_sv.insert(op_idx, sv_item_new_num)
+                m_p_list_sv.pop(op_idx)
+                m_p_list_sv.pop(op_idx)
+                m_p_list_sv.pop(op_idx)
+                print(f"Status after multiplication: {self.print_maths_problem_as_list(m_p_list_sv)}")
                 print()
 
                 # My awesome recursion:
@@ -79,7 +90,53 @@ class Calculator:
                 # If there is no mul-div term to solve, this method returns the last status of m_p_list_sv.
                 return m_p_list_sv
 
-    def add_sub_calculator(self, mylist: List[str]) -> List[str]:
+    def add_sub_calculator(self, m_p_list_sv: List[SlotValue]) -> List[SlotValue]:
+        for sv_item in m_p_list_sv:
+            if sv_item.resolved == "OPERATOR_ADD":
+                op_idx = sv_item.slot_position
+
+                num1 = int(m_p_list_sv[op_idx - 1].resolved)
+                num2 = int(m_p_list_sv[op_idx + 1].resolved)
+
+                result_add_sub = num1 + num2
+                print(f"Result of addition: {result_add_sub}")
+
+                m_p_list_sv.insert((op_idx + 2), result_add_sub)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                print(f"Status after addition: {self.print_maths_problem_as_list(m_p_list_sv)}")
+                print()
+
+                # My awesome recursion:
+                self.add_sub_calculator(m_p_list_sv)
+
+            elif sv_item.resolved == "OPERATOR_SUB":
+                op_idx = sv_item.slot_position
+
+                # Prepare the numbers for calculation:
+                num1 = int(m_p_list_sv[op_idx - 1].resolved)
+                num2 = int(m_p_list_sv[op_idx + 1].resolved)
+
+                # Calculate the math term in the list:
+                result_add_sub = num1 - num2
+                print(f"Result of addition: {result_add_sub}")
+
+                # Revise the list m_p_list_sv:
+                m_p_list_sv.insert((op_idx + 2), result_add_sub)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                m_p_list_sv.pop(op_idx - 1)
+                print(f"Status after addition: {self.print_maths_problem_as_list(m_p_list_sv)}")
+                print()
+
+                # My awesome recursion:
+                self.add_sub_calculator(m_p_list_sv)
+
+
+
+
+
         if '+' in mylist:
             opindex = mylist.index('+')
             num1index = opindex - 1
