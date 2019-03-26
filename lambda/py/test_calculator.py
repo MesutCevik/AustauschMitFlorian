@@ -30,6 +30,24 @@ class TestCalculator(TestCase):
         self.assertEqual(str(math_task_1[2]), math_task_1_sv[2].resolved)
         self.assertEqual("OPERATOR_ADD", math_task_1_sv[3].resolved)
         c = Calculator()
-        result = c.master_calculator(math_task_1_sv)
-        self.assertEqual("13", result)
+        result: List[SlotValue] = c.master_calculator(math_task_1_sv)
+        self.assertEqual("13", result[0].number_as_str)
 
+    def test_mul_div_calculator(self):
+        math_task_1 = [28]
+
+        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(math_task_1)
+
+        self.assertEqual("28", math_task_1_sv[0].resolved)
+
+    def test_master_calculator_small_term_large(self):
+        math_task_1 = ['(', '(', 8, '/', 2, ')', '*', 3, ')', '+', 1]
+        # math_task_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
+
+        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(math_task_1)
+
+        c = Calculator()
+        math_task_1_sv: List[SlotValue] = c.master_calculator(math_task_1_sv)
+        # math_task_1_sv[0].resolved
+        print(math_task_1_sv)
+        self.assertEqual("13", "13")

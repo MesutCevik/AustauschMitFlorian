@@ -19,173 +19,156 @@ class SlotValue:
     def __repr__(self) -> str:
         return self.__str__()
 
-    # def __str__(self) -> str:
-    #     return f"{self.resolved}"
-
     def __str__(self) -> str:
-        return f"{self.name}, {self.resolved}, {self.is_validated}, {self.number_as_str}, {self.slot_position}"
+        return f"{self.resolved}"
 
 
 class Calculator:
 
     def mul_div_calculator(self, math_term_mul_div: List[SlotValue]) -> List[SlotValue]:
-        # Calculate all multiplication and division maths tasks.
-        result_mul_div: int = 0
+        # This method calculates all multiplication and division tasks in the math term, which is passed by the
+        # argument "math_term_mul_div". In "math_term_mul_div" is a list of SlotValue objects. Each object stores one
+        # of the requiered numbers or operators within the variable "resolved".
+        result_mul_div: int
         op_idx: int = 0
+        op_mul_div: int = 0
 
         print(f"math_term_mul_div: {math_term_mul_div}")
 
+        # STEP 1: Check whether a multiplication or division operator is in the math term.
         for sv_item in math_term_mul_div:
-            # Check whether the value OPERATOR_MUL or OPERATOR_DIV is in one sv_item.
-            if sv_item.resolved == "OPERATOR_MUL":
-                pass
-            elif sv_item.resolved == "OPERATOR_DIV":
-                pass
-            else:
-                return math_term_mul_div
+            if sv_item.resolved in ("OPERATOR_MUL", "OPERATOR_DIV"):
+                op_mul_div += 1
+                print(f"resolved: {sv_item.resolved}")
 
-        for sv_item in math_term_mul_div:
-            print(f"Current sv_items index: {math_term_mul_div.index(sv_item, 0, len(math_term_mul_div))}")
-            cur_sv_item_idx = math_term_mul_div.index(sv_item, 0, len(math_term_mul_div))
-            print(f"sv_item at index {cur_sv_item_idx} is: {math_term_mul_div[cur_sv_item_idx]}")
-            print()
+        # STEP 2: If there is 1 or more mul/div operator in the math term, then continue in this method.
+        # Else return the current state of the math term.
+        if op_mul_div <= 0:
+            return math_term_mul_div
 
-            # Find the first multiplication or division operator and its index in the list "math_term_mul_div".
-            # When an operator is found, than assign its index to the VAR "op_idx".
-            if sv_item.resolved == "OPERATOR_MUL":
-                op_idx = math_term_mul_div.index(sv_item)
-                break
-            elif sv_item.resolved == "OPERATOR_DIV":
-                op_idx = math_term_mul_div.index(sv_item)
-                break
-            else:  # In this case we assume the value in field "resolved" is OPERATOR_ADD or OPERATOR_SUB.
-                continue
-
-        # Find and save number1 and number2:
-        # number1 is in the sv_item one before the sv_item with the operator. number2 is one after the operator
-        # sv_item. Take the value for each number from the sv_items "resolved"-field.
+        # STEP 3: Find the first mul/div operator in the list "math_term_mul_div" and save its index in a variable.
+        # Then determine the number1 (one index BEFORE the operator) and number2 (one index AFTER the operator).
         # Because the values of "resolved" field is a str, cast them to int!
-        num1 = int(math_term_mul_div[op_idx - 1].resolved)
-        num2 = int(math_term_mul_div[op_idx + 1].resolved)
+        for sv_item in math_term_mul_div:
+            if sv_item.resolved in ("OPERATOR_MUL", "OPERATOR_DIV"):
+                op_idx = math_term_mul_div.index(sv_item)
+                num1 = int(math_term_mul_div[op_idx - 1].resolved)
+                num2 = int(math_term_mul_div[op_idx + 1].resolved)
 
-        # Calculate the math term as we have number1, operator and number2:
-        if math_term_mul_div[op_idx].resolved == "OPERATOR_MUL":
-            result_mul_div = num1 * num2
-        elif math_term_mul_div[op_idx].resolved == "OPERATOR_DIV":
-            result_mul_div = int(num1 / num2)
-        else:
-            pass
-        print(f"The result of mul./div. is: {result_mul_div}")
+                # STEP 4: Calculate the math term as we have number1, operator and number2:
+                if math_term_mul_div[op_idx].resolved == "OPERATOR_MUL":
+                    result_mul_div = num1 * num2
+                elif math_term_mul_div[op_idx].resolved == "OPERATOR_DIV":
+                    result_mul_div = int(num1 / num2)
 
-        # Generate a new SlotValue()-object "sv_item_new_num" for the calculated result_mul_div (number):
+                print(f"The result of mul./div. is: {result_mul_div}")
+
+
+
+        # STEP 5: Generate a new SlotValue()-object in order to save the calculated result (number):
         sv_item_new_num = Calculator.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
                                                           number_as_str=str(result_mul_div),
                                                           resolved=str(result_mul_div), is_validated=False)
         print(f"sv_item_new_num: {sv_item_new_num}")
         print()
 
-        # Revise the list "math_term_mul_div":
+        # STEP 6: Revise the list "math_term_mul_div":
         # 1.) Insert the new object "sv_item_new_num" at position "op_idx - 1", this is the starting index of the
         # calculated math term.
-        # 2.) Pop the items, from which we take num1, operator and num2, at index "op_idx".
+        # 2.) Pop the items, from which we take num1, operator and num2, at index "op_idx", one position after
+        # the inserted new slot with the result.
         math_term_mul_div.insert(op_idx - 1, sv_item_new_num)
-        math_term_mul_div.pop(op_idx)
-        math_term_mul_div.pop(op_idx)
-        math_term_mul_div.pop(op_idx)
+        del math_term_mul_div[op_idx]
+        del math_term_mul_div[op_idx]
+        del math_term_mul_div[op_idx]
         print(f"math_term_mul_div AFTER calculation: {math_term_mul_div}")
         print()
 
-        print(f"The length of 'math_term_mul_div' is: {len(math_term_mul_div)}")
 
-        # My awesome recursion:
-        self.mul_div_calculator(math_term_mul_div)
+        # STEP 7: RECURSION > Start this method again with the updated list "math_term_mul_div" in order solve other
+        # mul/div math term.:
+        return self.mul_div_calculator(math_term_mul_div)
 
     def add_sub_calculator(self, math_term_add_sub: List[SlotValue]) -> List[SlotValue]:
-        result_add_sub: int = 0
+        result_add_sub: int
         op_idx: int = 0
+        op_add_sub: int = 0
 
-        print(f"math_term_mul_div: {math_term_add_sub}")
+        print(f"math_term_add_sub: {math_term_add_sub}")
 
-        if "OPERATOR_ADD" in math_term_add_sub:
-            pass
-        elif "OPERATOR_SUB" in math_term_add_sub:
-            pass
-        else:
+        for sv_item in math_term_add_sub:
+            if sv_item.resolved in ("OPERATOR_ADD", "OPERATOR_SUB"):
+                op_add_sub += 1
+
+        if op_add_sub <= 0:
             return math_term_add_sub
 
         for sv_item in math_term_add_sub:
-            if sv_item.resolved == "OPERATOR_ADD":
+            if sv_item.resolved in ("OPERATOR_ADD", "OPERATOR_SUB"):
                 op_idx = math_term_add_sub.index(sv_item)
+                num1 = int(math_term_add_sub[op_idx - 1].resolved)
+                num2 = int(math_term_add_sub[op_idx + 1].resolved)
+
+                if math_term_add_sub[op_idx].resolved == "OPERATOR_ADD":
+                    result_add_sub = num1 + num2
+                elif math_term_add_sub[op_idx].resolved == "OPERATOR_SUB":
+                    result_add_sub = int(num1 - num2)
+
+                print(f"The result of add/sub is: {result_add_sub}")
                 break
-            elif sv_item.resolved == "OPERATOR_SUB":
-                op_idx = math_term_add_sub.index(sv_item)
-                break
-            else:
-                continue
 
-        num1 = math_term_add_sub[op_idx - 1].resolved
-        num2 = math_term_add_sub[op_idx + 1].resolved
-
-        if math_term_add_sub[op_idx].resolved == "OPERATOR_ADD":
-            result_add_sub = num1 + num2
-        elif math_term_add_sub[op_idx].resolved == "OPERATOR_SUB":
-            result_add_sub = int(num1) - int(num2)
-
-        print(f"The result of add./sub. is: {result_add_sub}")
-        print()
-
-        # Generate a new SlotValue()-object "slot_value" for the calculated result (number):
-        sv_item_new_num = self.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
+        sv_item_new_num = Calculator.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
                                                           number_as_str=str(result_add_sub),
                                                           resolved=str(result_add_sub), is_validated=False)
-
-        math_term_add_sub.insert((op_idx - 1), sv_item_new_num)
-        math_term_add_sub.pop(op_idx)
-        math_term_add_sub.pop(op_idx)
-        math_term_add_sub.pop(op_idx)
-        print(f"math_term_add_sub AFTER calculation: {math_term_add_sub}")
+        print(f"sv_item_new_num: {sv_item_new_num}")
         print()
 
-        self.add_sub_calculator(math_term_add_sub)
+        math_term_add_sub.insert(op_idx - 1, sv_item_new_num)
+        math_term_add_sub.pop(op_idx)
+        math_term_add_sub.pop(op_idx)
+        math_term_add_sub.pop(op_idx)
+        print(f"math_term_mul_div AFTER calculation: {math_term_add_sub}")
+        print(f"The length of 'math_term_mul_div' is: {len(math_term_add_sub)}")
+        print()
 
-    def math_term_in_brackets_calculator(self, maths_problem_1_sv: List[SlotValue]) -> List[SlotValue]:
+        return self.add_sub_calculator(math_term_add_sub)
+
+    def math_term_in_brackets_calculator(self, math_term_check_brackets: List[SlotValue]) -> List[SlotValue]:
         m_p_bracket_open = 0
         m_p_bracket_close = 0
+        m_t_result: SlotValue
 
         # Count the number of open and close brackets.
-        for sv_item in maths_problem_1_sv:
+        for sv_item in math_term_check_brackets:
             if sv_item.resolved == "OPERATOR_BRACKET_OPEN":
                 m_p_bracket_open += 1
             elif sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
                 m_p_bracket_close += 1
-            else:
-                continue
+
 
         # Check whether there are brackets and whether the amount of open brackets is equal to close brackets.
-        if m_p_bracket_open == m_p_bracket_close > 0:
-            result: List[SlotValue] = []
-            op_bracket_open_idx = None
-            op_bracket_close_idx = None
+        if (m_p_bracket_open == m_p_bracket_close) and (m_p_bracket_open > 0):
+            op_bracket_open_idx: int
+            op_bracket_close_idx: int
 
-            # Loop through the items (SlotValue objects) in maths_problem_1_sv. Search for the first close bracket and
-            # its counterpart open bracket. Assign and save the slot positions for these brackets in separate VARs.
-            # Because the elif-part saves always the index of the last open bracket, we will have both counterpart
-            # brackets, when we have found the close bracket.
-            for sv_item in maths_problem_1_sv:
+            # Loop through the items (SlotValue objects) in math_term_check_brackets. Search for the first close
+            # bracket and its counterpart open bracket. Assign and save the slot positions for these brackets in
+            # separate VARs. Because the elif-part saves always the index of the last open bracket, we will have both
+            # counterpart brackets, when we have found the close bracket.
+            for sv_item in math_term_check_brackets:
                 if sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
-                    op_bracket_close_idx = maths_problem_1_sv.index(sv_item)
+                    op_bracket_close_idx = math_term_check_brackets.index(sv_item)
                     print(f"Index of the first close bracket: {op_bracket_close_idx}.")
-                    print(f"SlotValue object with close bracket: {maths_problem_1_sv[op_bracket_close_idx]}")
 
                 elif sv_item.resolved == "OPERATOR_BRACKET_OPEN":
-                    op_bracket_open_idx = maths_problem_1_sv.index(sv_item)
+                    op_bracket_open_idx = math_term_check_brackets.index(sv_item)
                     print(f"Index of the counterpart open bracket: {op_bracket_open_idx}.")
-                    print(f"SlotValue obj. of the counterpart open bracket: {maths_problem_1_sv[op_bracket_open_idx]}")
+
 
             # Extract the math term within the brackets. For this slice the elements (SlotValue objects) in m_p_list_sv
             # after the determined open bracket up to the determined close bracket - without the close bracket.
             # Save all slot_value objects in a VAR as a List[SlotValue].
-            math_term_in_brackets: List[SlotValue] = maths_problem_1_sv[op_bracket_open_idx + 1:op_bracket_close_idx]
+            math_term_in_brackets: List[SlotValue] = math_term_check_brackets[op_bracket_open_idx + 1:op_bracket_close_idx]
             print(f"Content of 'math_term_in_brackets': {math_term_in_brackets}")
 
             # To show the math term within brackets, we print the result of extraction:
@@ -195,34 +178,36 @@ class Calculator:
             # Calculate the math term within the brackets:
             for sv_item in math_term_in_brackets:
                 # 1st: Try to solve multiplications or divisions problem.
-                if sv_item.resolved == "OPERATOR_MUL" or "OPERATOR_DIV":
-                    result = self.mul_div_calculator(math_term_in_brackets)
+                if sv_item.resolved in ("OPERATOR_MUL", "OPERATOR_DIV"):
+                    m_t_result = self.mul_div_calculator(math_term_in_brackets)
                     # math_term_in_brackets = result
-                    print(f"Result after mul-div calculation: {result}")
+                    print(f"Result after mul-div calculation: {m_t_result}")
 
                 # 2nd: Try to solve add-sub tasks:
-                elif sv_item.resolved == "OPERATOR_ADD" or "OPERATOR_SUB":
-                    result = self.add_sub_calculator(math_term_in_brackets)
+                elif sv_item.resolved in ("OPERATOR_ADD", "OPERATOR_SUB"):
+                    m_t_result = self.add_sub_calculator(math_term_in_brackets)
                     # math_term_in_brackets = result
-                    print(f"Result after add-sub calculation: {result}")
-                else:
-                    continue  # If it is a number ...
+                    print(f"Result after add-sub calculation: {m_t_result}")
+
+            # Insert the whole elements from "result" into the origin maths problem list "m_p_list_sv" at the index
+            # [op_bracket_close_idx + 1]. "result" contains the slot_value objects with the math term elements.
+            # math_term_check_brackets[op_bracket_close_idx + 1] = m_t_result[:]
+            # math_term_check_brackets.insert(op_bracket_close_idx + 1, m_t_result)
+
+            for pos, tmp_item in enumerate(m_t_result, start=1):
+                math_term_check_brackets.insert(op_bracket_close_idx + pos, tmp_item)
 
             # Within the origin maths problem delete the math term in brackets and the brackets itself!
-            del maths_problem_1_sv[op_bracket_open_idx:op_bracket_close_idx + 1]
+            del math_term_check_brackets[op_bracket_open_idx:op_bracket_close_idx + 1]
 
-            # Insert the whole elements from result into the origin maths problem list "m_p_list_sv" at the index
-            # [op_bracket_open_idx]. "result" contains the slot_value objects with the math term elements.
-            maths_problem_1_sv[op_bracket_open_idx:op_bracket_open_idx] = result[:]
-
-            print(f"Result of the math term within the brackets: {result.__str__()}.")
-            print(f"Maths problem updatet: {maths_problem_1_sv.__str__()}")
+            print(f"Result of the math term within the brackets: {m_t_result.__str__()}.")
+            print(f"Maths problem updatet: {math_term_check_brackets.__str__()}")
 
             # Recursion: Try it again to solve another existing math term within brackets.
-            self.math_term_in_brackets_calculator(maths_problem_1_sv)
+            self.math_term_in_brackets_calculator(math_term_check_brackets)
 
         else:
-            return maths_problem_1_sv
+            return math_term_check_brackets
 
     def master_calculator(self, maths_problem_1_sv: List[SlotValue]) -> List[SlotValue]:
 
@@ -326,6 +311,7 @@ if __name__ == '__main__':
     print(f"The maths problem as a list in 'maths_problem_1': {maths_problem_1}")
     print(f"The maths problem as a list of SlotValue objects in 'maths_problem_1_sv': {maths_problem_1_sv}")
     print(f"The first SlotValue object in 'maths_problem_1_sv': {maths_problem_1_sv[0]}")
+    print()
 
     # Generates a standard object from the class "Calculator" and assigns it to VAR 'c'.
     c = Calculator()
@@ -349,4 +335,3 @@ if __name__ == '__main__':
     #     list_elem.append(maths_problem_1_sv[idx_elem].resolved)
     #     idx_elem += 1
     # print(list_elem)
-
