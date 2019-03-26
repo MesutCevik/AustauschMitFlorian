@@ -63,8 +63,6 @@ class Calculator:
 
                 print(f"The result of mul./div. is: {result_mul_div}")
 
-
-
         # STEP 5: Generate a new SlotValue()-object in order to save the calculated result (number):
         sv_item_new_num = Calculator.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
                                                           number_as_str=str(result_mul_div),
@@ -133,42 +131,42 @@ class Calculator:
 
         return self.add_sub_calculator(math_term_add_sub)
 
-    def math_term_in_brackets_calculator(self, math_term_check_brackets: List[SlotValue]) -> List[SlotValue]:
+    def math_term_in_brackets_calculator(self, math_term_with_brackets: List[SlotValue]) -> List[SlotValue]:
         m_p_bracket_open = 0
         m_p_bracket_close = 0
         m_t_result: SlotValue
 
         # Count the number of open and close brackets.
-        for sv_item in math_term_check_brackets:
+        for sv_item in math_term_with_brackets:
             if sv_item.resolved == "OPERATOR_BRACKET_OPEN":
                 m_p_bracket_open += 1
             elif sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
                 m_p_bracket_close += 1
-
 
         # Check whether there are brackets and whether the amount of open brackets is equal to close brackets.
         if (m_p_bracket_open == m_p_bracket_close) and (m_p_bracket_open > 0):
             op_bracket_open_idx: int
             op_bracket_close_idx: int
 
-            # Loop through the items (SlotValue objects) in math_term_check_brackets. Search for the first close
+            # Loop through the items (SlotValue objects) in math_term_with_brackets. Search for the first close
             # bracket and its counterpart open bracket. Assign and save the slot positions for these brackets in
             # separate VARs. Because the elif-part saves always the index of the last open bracket, we will have both
             # counterpart brackets, when we have found the close bracket.
-            for sv_item in math_term_check_brackets:
+            for sv_item in math_term_with_brackets:
                 if sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
-                    op_bracket_close_idx = math_term_check_brackets.index(sv_item)
-                    print(f"Index of the first close bracket: {op_bracket_close_idx}.")
+                    op_bracket_close_idx = math_term_with_brackets.index(sv_item)
+                    print(f"Index of first close bracket: {op_bracket_close_idx}.")
+                    break
 
                 elif sv_item.resolved == "OPERATOR_BRACKET_OPEN":
-                    op_bracket_open_idx = math_term_check_brackets.index(sv_item)
-                    print(f"Index of the counterpart open bracket: {op_bracket_open_idx}.")
+                    op_bracket_open_idx = math_term_with_brackets.index(sv_item)
+                    print(f"Index of last open bracket: {op_bracket_open_idx}.")
 
 
             # Extract the math term within the brackets. For this slice the elements (SlotValue objects) in m_p_list_sv
             # after the determined open bracket up to the determined close bracket - without the close bracket.
             # Save all slot_value objects in a VAR as a List[SlotValue].
-            math_term_in_brackets: List[SlotValue] = math_term_check_brackets[op_bracket_open_idx + 1:op_bracket_close_idx]
+            math_term_in_brackets: List[SlotValue] = math_term_with_brackets[op_bracket_open_idx + 1:op_bracket_close_idx]
             print(f"Content of 'math_term_in_brackets': {math_term_in_brackets}")
 
             # To show the math term within brackets, we print the result of extraction:
@@ -191,23 +189,23 @@ class Calculator:
 
             # Insert the whole elements from "result" into the origin maths problem list "m_p_list_sv" at the index
             # [op_bracket_close_idx + 1]. "result" contains the slot_value objects with the math term elements.
-            # math_term_check_brackets[op_bracket_close_idx + 1] = m_t_result[:]
-            # math_term_check_brackets.insert(op_bracket_close_idx + 1, m_t_result)
+            # math_term_with_brackets[op_bracket_close_idx + 1] = m_t_result[:]
+            # math_term_with_brackets.insert(op_bracket_close_idx + 1, m_t_result)
 
             for pos, tmp_item in enumerate(m_t_result, start=1):
-                math_term_check_brackets.insert(op_bracket_close_idx + pos, tmp_item)
+                math_term_with_brackets.insert(op_bracket_close_idx + pos, tmp_item)
 
             # Within the origin maths problem delete the math term in brackets and the brackets itself!
-            del math_term_check_brackets[op_bracket_open_idx:op_bracket_close_idx + 1]
+            del math_term_with_brackets[op_bracket_open_idx:op_bracket_close_idx + 1]
 
             print(f"Result of the math term within the brackets: {m_t_result.__str__()}.")
-            print(f"Maths problem updatet: {math_term_check_brackets.__str__()}")
+            print(f"Maths problem updatet: {math_term_with_brackets.__str__()}")
 
             # Recursion: Try it again to solve another existing math term within brackets.
-            self.math_term_in_brackets_calculator(math_term_check_brackets)
+            return self.math_term_in_brackets_calculator(math_term_with_brackets)
 
         else:
-            return math_term_check_brackets
+            return math_term_with_brackets
 
     def master_calculator(self, maths_problem_1_sv: List[SlotValue]) -> List[SlotValue]:
 
