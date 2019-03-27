@@ -20,28 +20,33 @@ class TestCalculator(TestCase):
         print(maths_problem_1_sv[0].resolved)  # In the list of SlotValues at index 0 must be 2.
 
         self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[1].resolved)
-        print("OPERATOR_MUL")
-        print(maths_problem_1_sv[1].resolved)
+        print("OPERATOR_MUL", maths_problem_1_sv[1].resolved)
 
         self.assertEqual(str(maths_problem_1[2]), maths_problem_1_sv[2].resolved)
-        print(str(maths_problem_1[2]))
-        print(maths_problem_1_sv[2].resolved)
-
-        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
+        print(str(maths_problem_1[2]), maths_problem_1_sv[2].resolved)
 
         self.assertEqual("OPERATOR_BRACKET_OPEN", maths_problem_1_sv[4].resolved)
-        print("OPERATOR_BRACKET_OPEN")
-        print(maths_problem_1_sv[4].resolved)
-
-        self.assertEqual(str(maths_problem_1[5]), maths_problem_1_sv[5].resolved)
-
-        self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[6].resolved)
-
-        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[11].resolved)
+        print("OPERATOR_BRACKET_OPEN", maths_problem_1_sv[4].resolved)
 
         self.assertEqual("OPERATOR_BRACKET_CLOSE", maths_problem_1_sv[8].resolved)
-        print("OPERATOR_BRACKET_CLOSE")
-        print(maths_problem_1_sv[8].resolved)
+        print("OPERATOR_BRACKET_CLOSE", maths_problem_1_sv[8].resolved)
+
+        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
+        self.assertEqual(str(maths_problem_1[5]), maths_problem_1_sv[5].resolved)
+        self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[6].resolved)
+        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[11].resolved)
+
+    def test_helper_generate_slot_value(self):
+        sv = Calculator.helper_generate_slot_value(name='4', slot_position=0, number_as_str=f"{4}",
+                                                   resolved='4', is_validated=False)
+        sv1 = Calculator.helper_generate_slot_value(name='*', slot_position=1, number_as_str=f"{'*'}",
+                                                   resolved="OPERATOR_MUL", is_validated=True)
+
+        self.assertEqual(('4', 0, '4', '4', False), (sv.name, sv.slot_position, sv.number_as_str, sv.resolved, sv.is_validated))
+        print(('4', 0, '4', '4', False), (sv.name, sv.slot_position, sv.number_as_str, sv.resolved, sv.is_validated))
+
+        self.assertEqual(('*', 1, '*', 'OPERATOR_MUL', True), (sv1.name, sv1.slot_position, sv1.number_as_str, sv1.resolved, sv1.is_validated))
+        print(('*', 1, '*', 'OPERATOR_MUL', True), (sv1.name, sv1.slot_position, sv1.number_as_str, sv1.resolved, sv1.is_validated))
 
     def test_helper_generate_list_of_slot_values(self):
         maths_problem_1 = [2, '*', 5, '+', 80, '/', 10]
@@ -70,7 +75,6 @@ class TestCalculator(TestCase):
         self.assertEqual("13", result[0].resolved)
         print("13", result[0].resolved)
 
-
     def test_mul_div_calculator(self):
         maths_problem_1 = [28]
 
@@ -89,3 +93,5 @@ class TestCalculator(TestCase):
         # maths_problem_1_sv[0].resolved
         print(maths_problem_1_sv)
         self.assertEqual("13", str(maths_problem_1_sv[0]))
+
+
