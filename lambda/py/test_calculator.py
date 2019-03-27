@@ -5,49 +5,87 @@ from Calculator import Calculator, SlotValue
 
 
 class TestCalculator(TestCase):
-    def test_master_calculator(self):
-        math_task_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
 
-        math_task_1_sv = Calculator.helper_generate_list_of_slot_values(math_task_1)
+    def test_helper_generate_list_of_slot_values_long_term(self):
+        # Tests the generating of a list of slot values from a maths problem as a list.
 
-        self.assertEqual(str(math_task_1[0]), math_task_1_sv[0].resolved)
-        self.assertEqual("OPERATOR_MUL", math_task_1_sv[1].resolved)
-        self.assertEqual(str(math_task_1[2]), math_task_1_sv[2].resolved)
-        self.assertEqual("OPERATOR_ADD", math_task_1_sv[3].resolved)
-        self.assertEqual("OPERATOR_BRACKET_OPEN", math_task_1_sv[4].resolved)
-        self.assertEqual(str(math_task_1[5]), math_task_1_sv[5].resolved)
-        self.assertEqual("OPERATOR_MUL", math_task_1_sv[6].resolved)
-        self.assertEqual("OPERATOR_DIV", math_task_1_sv[11].resolved)
-        self.assertEqual(str(math_task_1[12]), math_task_1_sv[12].resolved)
+        # Maths problem as a Python list:
+        maths_problem_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+
+        # Maths problem as a list of SlotValue objects:
+        maths_problem_1_sv = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
+
+        self.assertEqual(str(maths_problem_1[0]), maths_problem_1_sv[0].resolved)
+        print(str(maths_problem_1[0]))  # In the Python list the number at index 0 is 2.
+        print(maths_problem_1_sv[0].resolved)  # In the list of SlotValues at index 0 must be 2.
+
+        self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[1].resolved)
+        print("OPERATOR_MUL")
+        print(maths_problem_1_sv[1].resolved)
+
+        self.assertEqual(str(maths_problem_1[2]), maths_problem_1_sv[2].resolved)
+        print(str(maths_problem_1[2]))
+        print(maths_problem_1_sv[2].resolved)
+
+        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
+
+        self.assertEqual("OPERATOR_BRACKET_OPEN", maths_problem_1_sv[4].resolved)
+        print("OPERATOR_BRACKET_OPEN")
+        print(maths_problem_1_sv[4].resolved)
+
+        self.assertEqual(str(maths_problem_1[5]), maths_problem_1_sv[5].resolved)
+
+        self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[6].resolved)
+
+        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[11].resolved)
+
+        self.assertEqual("OPERATOR_BRACKET_CLOSE", maths_problem_1_sv[8].resolved)
+        print("OPERATOR_BRACKET_CLOSE")
+        print(maths_problem_1_sv[8].resolved)
+
+    def test_helper_generate_list_of_slot_values(self):
+        maths_problem_1 = [2, '*', 5, '+', 80, '/', 10]
+
+        maths_problem_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
+
+        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
+        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[5].resolved)
+        self.assertEqual(str(maths_problem_1[6]), maths_problem_1_sv[6].resolved)
 
     def test_master_calculator_small_term(self):
-        math_task_1 = [2, '*', 5, '+', '3']
+        maths_problem_1 = [2, '*', 5, '+', '3']
 
-        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(math_task_1)
+        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
 
-        self.assertEqual(str(math_task_1[0]), math_task_1_sv[0].resolved)
+        print(f"The maths_problem_1 - Python list:                  {maths_problem_1}")
+        print(f"The maths_problem_1_sv - list of SlotValue objects: {maths_problem_1}")
+        print()
+        self.assertEqual(str(maths_problem_1[0]), math_task_1_sv[0].resolved)
         self.assertEqual("OPERATOR_MUL", math_task_1_sv[1].resolved)
-        self.assertEqual(str(math_task_1[2]), math_task_1_sv[2].resolved)
+        self.assertEqual(str(maths_problem_1[2]), math_task_1_sv[2].resolved)
         self.assertEqual("OPERATOR_ADD", math_task_1_sv[3].resolved)
+
         c = Calculator()
         result: List[SlotValue] = c.master_calculator(math_task_1_sv)
-        self.assertEqual("13", result[0].number_as_str)
+        self.assertEqual("13", result[0].resolved)
+        print("13", result[0].resolved)
+
 
     def test_mul_div_calculator(self):
-        math_task_1 = [28]
+        maths_problem_1 = [28]
 
-        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(math_task_1)
+        maths_problem_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
 
-        self.assertEqual("28", math_task_1_sv[0].resolved)
+        self.assertEqual("28", maths_problem_1_sv[0].resolved)
 
     def test_master_calculator_small_term_large(self):
-        math_task_1 = ['(', '(', 8, '/', 2, ')', '*', 3, ')', '+', 1]
-        # math_task_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
+        maths_problem_1 = ['(', '(', 8, '/', 2, ')', '*', 3, ')', '+', 1]
+        # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
 
-        math_task_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(math_task_1)
+        maths_problem_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
 
         c = Calculator()
-        math_task_1_sv: List[SlotValue] = c.master_calculator(math_task_1_sv)
-        # math_task_1_sv[0].resolved
-        print(math_task_1_sv)
-        self.assertEqual("13", "13")
+        maths_problem_1_sv: List[SlotValue] = c.master_calculator(maths_problem_1_sv)
+        # maths_problem_1_sv[0].resolved
+        print(maths_problem_1_sv)
+        self.assertEqual("13", str(maths_problem_1_sv[0]))

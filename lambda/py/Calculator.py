@@ -300,7 +300,10 @@ class Calculator:
 
 if __name__ == '__main__':
     # The 1st maths problem as a list:
-    maths_problem_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+    # maths_problem_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
+    # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
+    # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 51, '*', '(', 8, '/', 2, ')', '-', 73, ')']
+    maths_problem_1 = ['(', '(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 30, ')', '-', 24, '*', 3, '+', '(', 51, '*', '(', 8, '/', 2, ')', '-', 73, ')']
 
     # Calls the method "helper_generate..." from the class "Calculator" in order to generate a list of SlotValue
     # objects, which contains the maths problems numbers and operators:
