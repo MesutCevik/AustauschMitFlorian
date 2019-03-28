@@ -82,7 +82,6 @@ class Calculator:
         print(f"math_term_mul_div AFTER calculation: {math_term_mul_div}")
         print()
 
-
         # STEP 7: RECURSION > Start this method again with the updated list "math_term_mul_div" in order solve other
         # mul/div math term.:
         return self.mul_div_calculator(math_term_mul_div)
@@ -153,6 +152,7 @@ class Calculator:
             # separate VARs. Because the elif-part saves always the index of the last open bracket, we will have both
             # counterpart brackets, when we have found the close bracket.
             for sv_item in math_term_with_brackets:
+                wat_is_in_sv_item = sv_item
                 if sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
                     op_bracket_close_idx = math_term_with_brackets.index(sv_item)
                     print(f"Index of first close bracket: {op_bracket_close_idx}.")
@@ -318,7 +318,7 @@ if __name__ == '__main__':
     c = Calculator()
 
     result_maths_problem_1_sv = c.master_calculator(maths_problem_1_sv)
-    result = result_maths_problem_1_sv[0].resolved
+    result = int(result_maths_problem_1_sv[0].resolved)
     print(f"THE RESULT IS: {result}")
 
     # The 2nd maths problem:

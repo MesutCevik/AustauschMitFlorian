@@ -36,6 +36,17 @@ class TestCalculator(TestCase):
         self.assertEqual("OPERATOR_MUL", maths_problem_1_sv[6].resolved)
         self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[11].resolved)
 
+    def test_helper_generate_list_of_slot_values_short_term(self):
+        maths_problem_1 = [2, '*', 5, '+', 80, '/', 10]
+
+        maths_problem_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
+
+        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
+        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[5].resolved)
+        self.assertEqual(str(maths_problem_1[6]), maths_problem_1_sv[6].resolved)
+
+        print(f"Values of field 'resolved' in list maths_problem_1_sv: {maths_problem_1_sv}")
+
     def test_helper_generate_slot_value(self):
         sv = Calculator.helper_generate_slot_value(name='4', slot_position=0, number_as_str=f"{4}",
                                                    resolved='4', is_validated=False)
@@ -57,17 +68,6 @@ class TestCalculator(TestCase):
                                                                         sv2.resolved, sv2.is_validated))
         print(('(', 3, '(', 'OPERATOR_BRACKET_OPEN', True), (sv2.name, sv2.slot_position, sv2.number_as_str,
                                                              sv2.resolved, sv2.is_validated))
-
-    def test_helper_generate_list_of_slot_values(self):
-        maths_problem_1 = [2, '*', 5, '+', 80, '/', 10]
-
-        maths_problem_1_sv: List[SlotValue] = Calculator.helper_generate_list_of_slot_values(maths_problem_1)
-
-        self.assertEqual("OPERATOR_ADD", maths_problem_1_sv[3].resolved)
-        self.assertEqual("OPERATOR_DIV", maths_problem_1_sv[5].resolved)
-        self.assertEqual(str(maths_problem_1[6]), maths_problem_1_sv[6].resolved)
-
-        print(f"Values of field 'resolved' in list maths_problem_1_sv: {maths_problem_1_sv}")
 
     def test_master_calculator_small_term(self):
         maths_problem_1 = [2, '*', 5, '+', '3']
@@ -133,6 +133,30 @@ class TestCalculator(TestCase):
         self.assertEqual("645", result3[0].resolved)
         self.assertEqual("OPERATOR_DIV", result3[1].resolved)
         self.assertEqual("14", result3[2].resolved)
+
+    def test_math_term_in_brackets_calculator_best_cases(self):
+        maths_problem_1 = [5498]
+        maths_problem_2 = [789, '-', 89]
+        maths_problem_3 = ['(', 789, '-', 89, ')', '*', 4, '-', 144]
+        maths_problem_4 = [1789, '+', '(', '(', 1204, '-', 204, ')', '*', 14, ')', '/', 14]
+
+        c = Calculator()
+
+        m_p_1_sv_list: List[SlotValue]  = c.helper_generate_list_of_slot_values(maths_problem_1)
+        result_1: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_1_sv_list)
+        self.assertEqual('5498', result_1[0].resolved)
+
+        m_p_2_sv_list: List[SlotValue] = c.helper_generate_list_of_slot_values(maths_problem_2)
+        result_2: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_2_sv_list)
+        self.assertEqual("[789, OPERATOR_SUB, 89]", str(result_2))
+
+        m_p_3_sv_list: List[SlotValue] = c.helper_generate_list_of_slot_values(maths_problem_3)
+        result_3: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_3_sv_list)
+        self.assertEqual("[700, OPERATOR_MUL, 4, OPERATOR_SUB, 144]", str(result_3))
+
+        m_p_4_sv_list: List[SlotValue] = c.helper_generate_list_of_slot_values(maths_problem_4)
+        result_4: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_4_sv_list)
+        self.assertEqual("[1789, OPERATOR_ADD, 14000, OPERATOR_DIV, 14]", str(result_4))
 
     def test_master_calculator_long_term(self):
         maths_problem_1 = ['(', '(', 8, '/', 2, ')', '*', 3, ')', '+', 1]
