@@ -65,8 +65,8 @@ class Calculator:
 
         # STEP 5: Generate a new SlotValue()-object in order to save the calculated result (number):
         sv_item_new_num = Calculator.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
-                                                          number_as_str=str(result_mul_div),
-                                                          resolved=str(result_mul_div), is_validated=False)
+                                                                number_as_str=str(result_mul_div),
+                                                                resolved=str(result_mul_div), is_validated=False)
         print(f"sv_item_new_num: {sv_item_new_num}")
         print()
 
@@ -115,8 +115,8 @@ class Calculator:
                 break
 
         sv_item_new_num = Calculator.helper_generate_slot_value(name=f"number{op_idx - 1}", slot_position=op_idx - 1,
-                                                          number_as_str=str(result_add_sub),
-                                                          resolved=str(result_add_sub), is_validated=False)
+                                                                number_as_str=str(result_add_sub),
+                                                                resolved=str(result_add_sub), is_validated=False)
         print(f"sv_item_new_num: {sv_item_new_num}")
         print()
 
@@ -152,7 +152,6 @@ class Calculator:
             # separate VARs. Because the elif-part saves always the index of the last open bracket, we will have both
             # counterpart brackets, when we have found the close bracket.
             for sv_item in math_term_with_brackets:
-                wat_is_in_sv_item = sv_item
                 if sv_item.resolved == "OPERATOR_BRACKET_CLOSE":
                     op_bracket_close_idx = math_term_with_brackets.index(sv_item)
                     print(f"Index of first close bracket: {op_bracket_close_idx}.")
@@ -187,7 +186,7 @@ class Calculator:
                     # math_term_in_brackets = result
                     print(f"Result after add-sub calculation: {m_t_result}")
 
-            # Insert the whole elements from "result" into the origin maths problem list "m_p_list_sv" at the index
+            # Insert the whole elements from "m_t_result" into the origin maths problem list "m_p_list_sv" at the index
             # [op_bracket_close_idx + 1]. "result" contains the slot_value objects with the math term elements.
             # math_term_with_brackets[op_bracket_close_idx + 1] = m_t_result[:]
             # math_term_with_brackets.insert(op_bracket_close_idx + 1, m_t_result)
@@ -217,10 +216,10 @@ class Calculator:
 
         # (3.)Zuletzt Plus-Minus-Rechnung ausrechnen
         self.add_sub_calculator(maths_problem_1_sv)
-        result = maths_problem_1_sv[:]
+        m_p_result = maths_problem_1_sv[:]
 
         # Return das Ergebnis
-        return result
+        return m_p_result
 
     @staticmethod
     def helper_generate_slot_value(name: str, slot_position: int, number_as_str: str, resolved: str,
@@ -302,8 +301,10 @@ if __name__ == '__main__':
     # The 1st maths problem as a list:
     # maths_problem_1 = [2, '*', 5, '+', '(', 7, '*', 4, ')', '-', 90, '/', 10]
     # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
-    # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 51, '*', '(', 8, '/', 2, ')', '-', 73, ')']
-    maths_problem_1 = ['(', '(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 30, ')', '-', 24, '*', 3, '+', '(', 51, '*', '(', 8, '/', 2, ')', '-', 73, ')']
+    # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 51, '*', '(', 8, '/', 2, ')', '-',
+    # 73, ')']
+    maths_problem_1 = ['(', '(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 30, ')', '-', 24, '*', 3, '+', '(', 51, '*',
+                       '(', 8, '/', 2, ')', '-', 73, ')']
 
     # Calls the method "helper_generate..." from the class "Calculator" in order to generate a list of SlotValue
     # objects, which contains the maths problems numbers and operators:

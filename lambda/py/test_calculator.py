@@ -158,6 +158,23 @@ class TestCalculator(TestCase):
         result_4: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_4_sv_list)
         self.assertEqual("[1789, OPERATOR_ADD, 14000, OPERATOR_DIV, 14]", str(result_4))
 
+
+    # FRAGEN: Wie kann ich Fehlerfälle in Unittests abbilden? Eigentlich muss ich doch die Try-Exception-Blöcke außerhalb der einzelnen Funktionen abbilden oder?
+    # So hattest Du es in einer anderen Version des Calculatro Skills auch abgebildet.
+    def test_math_term_in_brackets_calculator_worst_cases(self):
+        maths_problem_1 = ['(', '(', 789, '-', 89, ')', '*', 4, '-', 144]
+        maths_problem_2 = [1789, '+', '(', '(', 1204, '-', 204, ')', '*', 14, ')', ')', '/', 14]
+
+        c = Calculator()
+
+        # m_p_1_sv_list: List[SlotValue] = c.helper_generate_list_of_slot_values(maths_problem_1)
+        # result_1: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_1_sv_list)
+        # self.assertEqual('5498', result_1[0].resolved)
+
+        m_p_2_sv_list: List[SlotValue] = c.helper_generate_list_of_slot_values(maths_problem_2)
+        result_2: List[SlotValue] = c.math_term_in_brackets_calculator(m_p_2_sv_list)
+        self.assertEqual(45, str(result_2))
+
     def test_master_calculator_long_term(self):
         maths_problem_1 = ['(', '(', 8, '/', 2, ')', '*', 3, ')', '+', 1]
         # maths_problem_1 = ['(', 8, '/', '(', 8, '/', 2, ')', ')', '*', 3, '+', '(', 8, '/', 2, ')']
