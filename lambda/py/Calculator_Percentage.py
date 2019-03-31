@@ -9,7 +9,7 @@ c) Grundwert
 """
 
 
-def pc_searched_and_values(term: str) -> float:
+def pc_searched_value_and_values(term: str) -> float:
     """
     This method gets a percentage calculation task as a string within the argument 'term'. At first it checks the
     passed argument whether it contains a string or is empty. Then the string will be split into the required parts
@@ -19,14 +19,13 @@ def pc_searched_and_values(term: str) -> float:
 
     # If the passed argument in 'term' is empty, then raise a ValueError and print out the message.
     if not term:
-        raise ValueError("In Ihrer Eingabe ist ein Fehler. Ich brauche eine Aufgabe zur Prozentrechnung.")
+        raise ValueError("In Ihrer Eingabe ist ein Fehler. Bitte geben sie eine Aufgabe zur Prozentrechnung.")
 
     # Split the string in 'term' into parts using a blank space or a comma as a delimiter.
     # Assign the result into the list in the variable 'parts'.
+    # Afterwards it filters this list from None; it deletes all None values in 'parts'.
     parts = term.split(" ") or term.split(",")
-    """
-    Afterwards it filters this list from None; it deletes all None values in 'parts'. 
-    """
+    parts = list(filter(None, parts))
 
     # If the list in 'parts' contains only 1 element, then convert and return the value as a float.
     # If the casting to float fails, the try loop will catch it.
@@ -50,6 +49,16 @@ def pc_searched_and_values(term: str) -> float:
     return pc_prepare_the_calculation(searched, value1, value2)
 
 
+def pc_prepare_the_calculation(searched: str, value1: str, value2: str) -> float:
+    # Converts the given values 'value1' and 'value2' to floats, calls the pc_calculate_searched_value method and
+    # returns the searched value.
+
+    value1 = pc_convert_value_to_float(value1)
+    value2 = pc_convert_value_to_float(value2)
+
+    return pc_calculate_searched_value(searched, value1, value2)
+
+
 def pc_convert_value_to_float(number: str) -> float:
     # Convert the given argument (a string) to float and returns the float value.
 
@@ -60,16 +69,6 @@ def pc_convert_value_to_float(number: str) -> float:
         number = float(number)
 
     return number
-
-
-def pc_prepare_the_calculation(searched: str, value1: str, value2: str) -> float:
-    # Converts the given values 'value1' and 'value2' to floats, calls the pc_calculate_searched_value method and
-    # returns the searched value.
-
-    value1 = pc_convert_value_to_float(value1)
-    value2 = pc_convert_value_to_float(value2)
-
-    return pc_calculate_searched_value(searched, value1, value2)
 
 
 def pc_calculate_searched_value(searched, value1, value2) -> float:
@@ -104,7 +103,7 @@ def pc_calculate_searched_value(searched, value1, value2) -> float:
 def percentage_calculation_task(term: str) -> str:
 
     try:
-        result = pc_searched_and_values(term)
+        result = pc_searched_value_and_values(term)
         result_as_string = f"Die Prozentaufgabe lautet: {term} = {str(result)}"
         # Defines a new variable and puts in a formatted text including the result of the whole calculation.
         print(result_as_string)

@@ -1,65 +1,68 @@
 import math
 
 """
-This program is for interest-calculation (Zinsrechnung).
-fc is the final capital without compound interest, fcci is the final capital with compound interest.
+ZINSRECHNUNG
+Dieses Programm berechnet Zinsaufgaben und kann ermitteln:
+a) Endkapital bei einfacher Verzinsung
+b) Endkapital bei Zinseszins
 """
 
-# TODO: Add Test 3
 
+def ic_searched_value_and_values(term: str or None) -> float:
+    """
+    This method gets a interest calculation task as a string within the argument 'term'. At first it checks the
+    passed argument whether it contains a string or is empty. Then the string will be split into the required parts
+    of the ic task: gesuchter_wert, anfangskapital, zinssatz and anzahl_jahre.
+    Thereafter it returns all 4 parts to the function `ic_prepare_the_calculation`.
+    """
 
-def ic_searched_and_values(term: str or None) -> float:
-    """
-    An argument passed to this function will be assigned to the parameter (variable) named term. Thereafter the code
-    in the body will be computed with the argument (parameter value).
-    This function splits a percentage calculation task (delivered as a string) into the 3 parts and puts them
-    into the variables: searched, value1 and value2. Thereafter it returns all 3 parts to the function
-    `vat_searched_and_values_str_str_str`.
-    """
+    # If the passed argument in 'term' is empty, then raise a ValueError and print out the message.
     if not term:
-        raise ValueError("I need a non empty string.")
-    """
-    This code checks the content of the parameter/variable 'term', whether it has no values. 
-    If yes, it raises a ValueError and prints out the given text.
-    """
+        raise ValueError("In Ihrer Eingabe ist ein Fehler. Bitte geben sie eine Aufgabe zur Zinsrechnung.")
 
+    # Split the string in 'term' into parts using a blank space or a comma as a delimiter.
+    # Assign the result into the list in the variable 'parts'.
     parts = term.split(" ") or term.split(",")
     parts = list(filter(None, parts))
-    """
-    This code splits the content of the parameter 'term' in to parts, the splitting delimiter is a blank space. 
-    Afterwards it puts the outcome into the variable 'parts'.
-    """
 
+    # If the list in 'parts' contains only 1 element, then convert and return the value as a float.
+    # If the casting to float fails, the try loop will catch it.
     if len(parts) == 1:
-        """
-        If there is only one piece/part in the string, return it to the caller of this function.
-        If the float casting fails, the try loop will catch it.
-        """
-        result = ic_convert_values_to_float(parts[0])
+        result = ic_convert_value_to_float(parts[0])
         return round(result, 2)
 
+    # If the list in 'parts' has only 2 parts, then raise a value error.
     if len(parts) == 2:
-        """
-        If there are only two elements in the string, raise a value error.
-        """
-        raise ValueError("Hey I need all information to do a interest-calculation.")
+        raise ValueError("Ein Fehler ist aufgetreten. Bitte geben Sie alle benötigten Angaben, damit rechnen kann.")
 
+    # If the list in 'parts' has not exactly 4 parts, then raise a value error.
     if len(parts) != 4:  # If there are not exactly 4 parts, raise an value error.
-        raise ValueError("Hey I need all information to do a interest-calculation.")
+        raise ValueError("Ein Fehler ist aufgetreten. Bitte geben Sie alle benötigten Angaben, damit rechnen kann.")
 
     # Put the splitted values from the list into separate variables.
-    searched = parts[0]
-    value1 = parts[1]
-    value2 = parts[2]
-    value3 = parts[3]
+    gesuchter_wert: str = parts[0]
+    anfangskapital: str = parts[1]
+    zinssatz: str = parts[2]
+    anzahl_jahre: str = parts[3]
 
-    # Return the solution to the caller auf this function.
-    return ic_searched_and_values_all_str(searched, value1, value2, value3)
+    # Pass the values of the interest calculation task to the method 'ic_prepare_the_calculation'.
+    # Note: When a method returns more than 1 value, then it returns it as a tuple!!!
+    return ic_prepare_the_calculation(gesuchter_wert, anfangskapital, zinssatz, anzahl_jahre)
 
 
-# TODO: Add Test 1
-def ic_convert_values_to_float(number: str) -> float:
-    # This function gets an argument, converts delivered string values to floats.
+def ic_prepare_the_calculation(gesuchter_wert: str, anfangskapital: str, zinssatz: str, anzahl_jahre: str) -> float:
+    # Converts the given values 'anfangskapital', 'zinssatz' and 'anzahl_jahre' to floats, calls the method
+    # ic_calculate_searched_value method and returns the searched value.
+
+    anfangskapital = ic_convert_value_to_float(anfangskapital)
+    zinssatz = ic_convert_value_to_float(zinssatz)
+    anzahl_jahre = ic_convert_value_to_float(anzahl_jahre)
+
+    return ic_calculate_searched_value(gesuchter_wert, anfangskapital, zinssatz, anzahl_jahre)
+
+
+def ic_convert_value_to_float(number: str) -> float:
+    # Converts the passed argument (a string, which stands for a number) to a float.
     if not number:
         raise ValueError("I need a non empty string")
 
@@ -69,38 +72,30 @@ def ic_convert_values_to_float(number: str) -> float:
     return number
 
 
-# TODO: Add Test 2
-def ic_searched_and_values_all_str(searched: str, value1: str, value2: str, value3: str) -> float:
-    """
-    This function changes the types of value1 and value2 to floats and passes the variables
-    searched, value1 and value2 to the function "vat_the_calculation".
-    """
-    value1 = ic_convert_values_to_float(value1)
-    value2 = ic_convert_values_to_float(value2)
-    value3 = ic_convert_values_to_float(value3)
+def ic_calculate_searched_value(gesuchter_wert: str, anfangskapital: float, zinssatz: float, anzahl_jahre: float) \
+        -> float:
+    # Calculates the searched value from the interest calculations problem.
+    if gesuchter_wert == "Zinserträge":
+        basis = 1 + zinssatz
+        exponent = anzahl_jahre
+        endkapital = anfangskapital * basis ** exponent
+        result = endkapital - anfangskapital
 
-    return ic_the_calculation(searched, value1, value2, value3)
-
-
-# TODO: Add Test 1
-def ic_the_calculation(searched: str, value1: float, value2: float, value3: float) -> float:
-    # This function calculates the maths problem from the user.
-    if searched == "fc":
-        start_capital = value1
-        interest = 1 + value2 * value3
-        result = start_capital + interest
-
-    elif searched == "fcci":
-        start_capital = value1
-        base = 1 + value2
-        exponent = value3
-        result = start_capital * base ** exponent
+    elif gesuchter_wert == "Endkapital":
+        basis = 1 + zinssatz
+        exponent = anzahl_jahre
+        result = anfangskapital * basis ** exponent
 
     else:
-        raise ValueError("Ohh Jesus, interest calculation is so difficult! I can´t calculate this.")
+        raise ValueError("Bei der Berechnung ist ein Fehler aufgetreten. Bitte prüfen sie ihre Eingabe und geben sie"
+                         "Zinsrechnungsaufgabe erneut ein.")
 
+    # Do not return the decimal place of result, if it is 0. Then return an integer.
+    # R1: Split the float number in 'result' into the fractional and integer parts.
+    # R2: If the decimal place is 0, then convert the float number to integer.
+    # R4: Else round the result to two decimal places if necessary.
     d, i = math.modf(result)
-    if d == 0:  # If the decimal place is equal to 0, then change the number type to integer.
+    if d == 0:
         result = int(result)
     else:
         result = round(result, 2)
@@ -115,23 +110,31 @@ def interest_calculation_task(term: str) -> str:
     """
 
     try:
-        result = ic_searched_and_values(term)
-        result_as_string = f"The interest-calculation task (searched value, start-capital, interest rate, " \
-                           f"time period): {term} = {str(result)}"
+        result = ic_searched_value_and_values(term)
+        result_as_string = f"Die Zinsrechnungsaufgabe (gesucht ist das Endkapital, gegeben ist Anfangskapital, " \
+            f"Zinssatz und Jahre): {term} = {str(result)}"
         print(result_as_string)
         return result_as_string  # make it easier for testing
     except ValueError as ex:
-        print(f"Mistake: I'm not able to calc '{term}' Reason: {ex} ")
+        print(f"Fehler: Ich kann diese Aufgabe nicht rechnen: '{term}'. Grund: {ex} ")
+
 
 if __name__ == "__main__":  # pragma: no cover
     # Imagine Each line as a new user interaction, that's why we don't do `input`.
-    # p = percentage (rate), pv = percentage value (part), b = base
-    interest_calculation_task("fc 1000 0.05 3")
+    """
+    Kn 	: Endkapital (inkl. Zinsen nach n Jahren)
+    K0 	: Anfangskapital
+    p 	: Zinssatz (in Prozent pro Jahr)
+    n 	: Jahre (Anzahl)
+    Formel für Endkapital nach n-Jahren: Kn = K0 ((p/100) + 1) hoch n
+    Formel für Zinserträge nach n-Jahren: Zn = Kn - K0 (Zinzen inkl. Zinseszinsen)
+    """
+
+    interest_calculation_task("Zinserträge 1000 0.07 5")
     # What is the (simple) final capital, when 1000 EUR has been invested with an interest rate of 5% over 3 years
     # without compound interest?
-    interest_calculation_task("fcci 1000 0.05 12")
-    # What is the final capital, when 1000 EUR has been invested with an interest rate of 5% over 3 years
-    # with compound interest?
+    interest_calculation_task("Endkapital 1000 0.07 5")
+    # Wie hoch ist das Endkapital, wenn 1000 EUR bei 7% Zinsen 5 Jahre angelegt werden? (mit Zinseszinsen)
 
     interest_calculation_task("b 40900 0.34 15")
     interest_calculation_task("r")
