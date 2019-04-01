@@ -271,6 +271,9 @@ class Calculator:
 
     def master_calculator(self, maths_problem_1_sv: List[SlotValue]) -> List[SlotValue]:
 
+        # (0.) Trigonometrische, Poten- und Wurzelzaufgaben zuerst ausrechnen:
+        self.trigonometry_and_power_calculator(maths_problem_1_sv)
+
         # (1.) Zuerst Klammer-Ausdrücke ausrechnen:
         self.math_term_in_brackets_calculator(maths_problem_1_sv)
 
