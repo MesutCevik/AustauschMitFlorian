@@ -1,3 +1,5 @@
+import math
+import re
 from enum import Enum
 from typing import List
 
@@ -205,6 +207,67 @@ class Calculator:
 
         else:
             return math_term_with_brackets
+
+    def trigonometry_and_power_calculator(self, math_term_mul_div: List[SlotValue]) -> List[SlotValue]:
+        # Calculates trigonometry and power tasks.
+
+        # for sv_item in math_term_mul_div:
+        #     if sv_item.resolved in ("OPERATOR_MUL", "OPERATOR_DIV"):
+        #         op_mul_div += 1
+        #         print(f"resolved: {sv_item.resolved}")
+
+        for sv_item in math_term_mul_div:
+            number = sv_item.resolved
+
+            if "^" in number:  # 4^2 = 4 * 4 = 16
+                parts = number.split("^")
+                """
+                If sep is given, consecutive delimiters are not grouped together and are deemed to delimit empty strings 
+                (for example, '1,,2'.split(',') returns ['1', '', '2']). 
+                https://docs.python.org/3/library/stdtypes.html#str.split
+                """
+                parts = list(filter(None, parts))
+                if len(parts) != 2:
+                    raise ValueError("In der Potenzrechnung stimmt etwas nicht. Bitte wiederholen sie die Aufgabe.")
+                base = float(parts[0])
+                exponent = float(parts[1])
+                number = math.pow(base, exponent)
+
+            elif "cos" in number:  # e.g. cos(25.76)
+                cos_num_str = re.findall('[0-9]+', number)  # 25.76
+                cos_num_float = float(cos_num_str[0])  # convert to float.
+                cos_solution = math.cos(cos_num_float)  # calculate cosinus with math-module.
+                number = cos_solution
+                number = round(number, 3)
+
+            elif "sin" in number:  # e.g. sin(16.86)
+                sin_num_str = re.findall('[0-9]+', number)  # 16.86
+                sin_num_float = float(sin_num_str[0])  # convert to float.
+                sin_solution = math.cos(sin_num_float)  # calculate cosinus with math-module.
+                number = sin_solution
+                number = round(number, 3)
+
+            elif "tan" in number:  # e.g. tan(90.54)
+                tan_num_str = re.findall('[0-9]+', number)  # 90.54
+                tan_num_float = float(tan_num_str[0])  # convert to float.
+                tan_solution = math.cos(tan_num_float)  # calculate cosinus with math-module.
+                number = tan_solution
+                number = round(number, 3)
+
+            elif "sqrt" in number:  # e.g. sqrt(36)
+                sqrt_num_str = re.findall('[0-9]+', number)  # 36
+                sqrt_num_float = float(sqrt_num_str[0])  # convert to float.
+                sqrt_solution = math.sqrt(sqrt_num_float)  # calculate square root with math-module.
+                number = sqrt_solution
+                number = round(number, 3)
+
+            else:
+                number = float(number)
+
+            # Assigns the calculated number back to the SlotValue object.
+            sv_item.resolved = str(number)
+
+        return self.mul_div_calculator(math_term_mul_div)
 
     def master_calculator(self, maths_problem_1_sv: List[SlotValue]) -> List[SlotValue]:
 

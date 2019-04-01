@@ -3,14 +3,14 @@ import math
 """
 ZINSRECHNUNG
 Dieses Programm berechnet Zinsaufgaben und kann ermitteln:
-a) Endkapital bei einfacher Verzinsung
-b) Endkapital bei Zinseszins
+a) Verzinsung einer Investition
+b) Endkapital bei Zinseszins einer Investition
 """
 
 
 def ic_searched_value_and_values(term: str or None) -> float:
     """
-    This method gets a interest calculation task as a string within the argument 'term'. At first it checks the
+    This method gets an interest calculation task as a string within the argument 'term'. At first it checks the
     passed argument whether it contains a string or is empty. Then the string will be split into the required parts
     of the ic task: gesuchter_wert, anfangskapital, zinssatz and anzahl_jahre.
     Thereafter it returns all 4 parts to the function `ic_prepare_the_calculation`.
@@ -20,13 +20,13 @@ def ic_searched_value_and_values(term: str or None) -> float:
     if not term:
         raise ValueError("In Ihrer Eingabe ist ein Fehler. Bitte geben sie eine Aufgabe zur Zinsrechnung.")
 
-    # Split the string in 'term' into parts using a blank space or a comma as a delimiter.
-    # Assign the result into the list in the variable 'parts'.
+    # Splits the string in 'term' into parts using a blank space or a comma as a delimiter.
+    # Assigns the result into the list in the variable 'parts'.
     parts = term.split(" ") or term.split(",")
     parts = list(filter(None, parts))
 
     # If the list in 'parts' contains only 1 element, then convert and return the value as a float.
-    # If the casting to float fails, the try loop will catch it.
+    # If the casting to float fails, the try-except loop will catch it.
     if len(parts) == 1:
         result = ic_convert_value_to_float(parts[0])
         return round(result, 2)
